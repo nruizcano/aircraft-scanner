@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --buttons: #269ac9;
+  --hover-buttons: #96f4ff;
+  --accent: #5ccce4;
+  --neutral: #ccc;
+  --dark-neutral: #666;
+
+  /* Light theme colors */
+  --light-background: #e3e3e3;
+  --light-foreground: #191919;
+  --light-header-footer: #191919;
+
+  /* Dark theme colors */
+  --dark-foreground: #fff;
+  --dark-background: #131f40;
+  --dark-header-footer: #0d152a;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.spinner {
+  width: 70px;
+  height: 70px;
+
+  border: 7px solid var(--neutral);
+  border-top-color: var(--accent);
+  border-radius: 100%;
+
+  animation: spin 1s infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
