@@ -1,24 +1,32 @@
 import Webcam from "react-webcam";
 import useSound from "use-sound";
 import Image from "next/image";
+import { SetState } from "../lib/utils";
+import { takePhoto } from "../lib/utils";
 
-export const SnapButton = ({
-  onClick,
-  webcamRef,
-  videoConstraints,
-}: {
-  onClick: () => void;
-  webcamRef: React.RefObject<Webcam>;
-  videoConstraints: { facingMode: string };
-}) => {
+export const SnapButton = (
+  webcamRef: React.RefObject<Webcam>,
+  isPhotoTaken: boolean,
+  setIsPhotoTaken: SetState<boolean>,
+  setResizedImage: SetState<string | ArrayBuffer | null>,
+  setAnalysisResult: SetState<string | null>,
+  router: any,
+) => {
   const [play] = useSound("/snap.mp3");
 
   return (
     <button
       className="mt-8 mb-4 bg-[radial-gradient(circle_at_center,var(--neutral),var(--dark-neutral))] rounded-full"
       onClick={() => {
-        onClick();
-        play();
+        takePhoto(
+          webcamRef,
+          play,
+          isPhotoTaken,
+          setIsPhotoTaken,
+          setResizedImage,
+          setAnalysisResult,
+          router,
+        );
       }}
       type="button"
     >

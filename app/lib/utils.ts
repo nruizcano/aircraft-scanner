@@ -1,23 +1,61 @@
-type SetState<T> = (value: T | ((prev: T) => T)) => void;
+import Webcam from "react-webcam";
 
-export async function handleImageUpload(
-  event: React.ChangeEvent<HTMLInputElement>,
+export type SetState<T> = (value: T | ((prev: T) => T)) => void;
+
+export async function takePhoto(
+  webcamRef: React.RefObject<Webcam>,
+  play: () => void,
+  isPhotoTaken: boolean,
   setIsPhotoTaken: SetState<boolean>,
   setResizedImage: SetState<string | ArrayBuffer | null>,
   setAnalysisResult: SetState<string | null>,
   router: any
 ): Promise<void> {
-  const file = event.target.files?.[0];
+  if (!isPhotoTaken) {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    play();
 
-  if (!file) {
-    return;
+    if (!imageSrc) {
+      return;
+    }
+
+    handleImage(imageSrc, setIsPhotoTaken, setResizedImage, setAnalysisResult, router);
   }
 
-  const image = await readImageAsDataURL(file);
-  localStorage.setItem("imageSent", image);
+  return;
+};
 
-  try {
+export async function uploadImage(
+  event: React.ChangeEvent<HTMLInputElement>,
+  isPhotoTaken: boolean,
+  setIsPhotoTaken: SetState<boolean>,
+  setResizedImage: SetState<string | ArrayBuffer | null>,
+  setAnalysisResult: SetState<string | null>,
+  router: any
+): Promise<void> {
+  if (!isPhotoTaken) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
     const image = await readImageAsDataURL(file);
+
+    await handleImage(image, setIsPhotoTaken, setResizedImage, setAnalysisResult, router);
+  }
+
+  return;
+}
+
+export async function handleImage(
+  image: string,
+  setIsPhotoTaken: SetState<boolean>,
+  setResizedImage: SetState<string | ArrayBuffer | null>,
+  setAnalysisResult: SetState<string | null>,
+  router: any
+): Promise<void> {
+  try {
     setIsPhotoTaken(true);
 
     const resizedImage = await resizeImage(image);
@@ -32,7 +70,7 @@ export async function handleImageUpload(
       router.push("camera/scanned");
     }
   } catch (error) {
-    console.error("Error handling image upload: ", error);
+    console.error("Error handling image: ", error);
   }
 }
 
@@ -54,7 +92,7 @@ export function resizeImage(imageSrc: string, maxWidth: number = 512, maxHeight:
     img.onload = () => {
       const MAX_WIDTH = maxWidth;
       const MAX_HEIGHT = maxHeight;
-      
+
       let width = img.width;
       let height = img.height;
 

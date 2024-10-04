@@ -1,9 +1,9 @@
-import { handleImageUpload } from "../lib/utils";
+import { SetState } from "../lib/utils";
+import { uploadImage } from "../lib/utils";
 import Image from "next/image";
 
-type SetState<T> = (value: T | ((prev: T) => T)) => void;
-
 export const ImportButton = (
+  isPhotoTaken: boolean,
   setIsPhotoTaken: SetState<boolean>,
   setResizedImage: SetState<string | ArrayBuffer | null>,
   setAnalysisResult: SetState<string | null>,
@@ -19,8 +19,9 @@ export const ImportButton = (
         type="file"
         id="fileInput"
         onChange={(event) =>
-          handleImageUpload(
+          uploadImage(
             event,
+            isPhotoTaken,
             setIsPhotoTaken,
             setResizedImage,
             setAnalysisResult,
